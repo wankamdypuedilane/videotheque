@@ -86,3 +86,17 @@ Exemple de création d'un film :
 
 27 tests : repository (`@DataJpaTest`), service (Mockito), contrôleur (`@WebMvcTest` + MockMvc),
 et un test de chargement des contrôleurs. Couverture mesurée sous IntelliJ : environ 70 % des lignes.
+
+## Choix de sérialisation JSON
+
+Les associations Film/Category et Film/Actor sont bidirectionnelles : sans annotation Jackson,
+la sérialisation boucle (StackOverflowError). Le cours propose trois solutions :
+
+- `@JsonManagedReference` / `@JsonBackReference` : la référence arrière doit être une propriété
+  simple, pas une liste ; ce couple ne convient pas à `Category.films` ni au ManyToMany Film/Actor.
+- `@JsonIdentityInfo` + `@JsonIdentityReference(alwaysAsId = true)` sur `Film.category` :
+  le film n'afficherait plus que l'id de sa catégorie au lieu de l'objet complet.
+- **Solution retenue : `@JsonIgnore` sur `Category.films` et `Actor.films`.**
+  Le film est l'objet central : il affiche sa catégorie et ses acteurs complets.
+  Une catégorie et un acteur n'affichent que leurs propres attributs (comme l'Artist du jukebox).
+  Les films d'une catégorie restent disponibles avec `GET /api/categories/{id}/films`.
