@@ -84,8 +84,10 @@ Exemple de création d'un film :
 ./mvnw test
 ```
 
-27 tests : repository (`@DataJpaTest`), service (Mockito), contrôleur (`@WebMvcTest` + MockMvc),
-et un test de chargement des contrôleurs. Couverture mesurée sous IntelliJ : environ 70 % des lignes.
+Un test simple par couche, au format GIVEN / WHEN / THEN :
+- `FilmRepositoryTest` : `findByCategoryId` sur la base H2 (`@DataJpaTest`) ;
+- `FilmServiceTest` : `findAll` avec un faux repository (Mockito) ;
+- `FilmControllerTest` : `GET /api/films` avec un faux service (`@WebMvcTest` + MockMvc).
 
 ## Choix de sérialisation JSON
 
